@@ -1,107 +1,107 @@
-# Documentation Audit Report
+# Отчет по аудиту документации
 
-## Scope
+## Область проверки
 
-Reviewed all Markdown documentation in the repository:
-- root-level docs (`README.md`, `docs/*.md`)
-- domain docs for catalog and label printing (`docs app/docs ...`)
+Проверена вся Markdown-документация в репозитории:
+- корневые документы (`README.md`, `docs/*.md`)
+- доменные документы для catalog и label printing (`docs app/docs ...`)
 
-## Critical inconsistencies
+## Критические несостыковки
 
-1. **Duplicate architecture content**
-   - `docs/01_ARCHITECTURE.md` and `docs/02_TENANT_ISOLATION.md` currently contain almost identical Tenant Isolation text.
-   - This creates ambiguity: file `01_ARCHITECTURE` is expected to be system architecture, but actually duplicates tenant isolation.
+1. **Дублирование архитектурного контента**
+   - `docs/01_ARCHITECTURE.md` и `docs/02_TENANT_ISOLATION.md` сейчас содержат почти одинаковый текст про Tenant Isolation.
+   - Это создает неоднозначность: файл `01_ARCHITECTURE` ожидается как верхнеуровневая архитектура системы, но фактически дублирует tenant isolation.
 
-2. **Corrupted text in tenant isolation checklist**
-   - In `docs/02_TENANT_ISOLATION.md` the checklist line contains garbage text (`...по времени шлллолзцorganization_id?`).
-   - This looks like an editing artifact and reduces trust in the document.
+2. **Поврежденный текст в чеклисте tenant isolation**
+   - В `docs/02_TENANT_ISOLATION.md` в одной из строк чеклиста присутствует мусорный текст (`...по времени шлллолзцorganization_id?`).
+   - Это похоже на артефакт редактирования и снижает доверие к документу.
 
-3. **Data model mismatch in payroll section**
-   - `docs/05_DATABASE_ARCHITECTURE.md` defines `payroll_records` with `employment_id`, but a later query example filters payroll by `user_id` in `payroll_records`.
-   - That query cannot work with the schema as documented.
+3. **Несоответствие модели данных в разделе payroll**
+   - В `docs/05_DATABASE_ARCHITECTURE.md` таблица `payroll_records` описана с полем `employment_id`, но в примере запроса ниже фильтрация идет по `user_id` в `payroll_records`.
+   - В текущем виде такой запрос не соответствует задокументированной схеме.
 
-4. **Status model mismatch in label printing**
-   - `02_DOMAIN_MODEL.md` describes print job statuses as `queued / claimed / printed / failed`.
-   - `08_QUEUE_ARCHITECTURE.md` additionally includes `cancelled`.
-   - Terminal API does not document a cancel endpoint, despite Queue UI mentioning Cancel action.
+4. **Несоответствие модели статусов в label printing**
+   - В `02_DOMAIN_MODEL.md` статусы print job: `queued / claimed / printed / failed`.
+   - В `08_QUEUE_ARCHITECTURE.md` дополнительно указан статус `cancelled`.
+   - При этом в Terminal API не задокументирован endpoint для отмены, хотя в Queue UI есть действие Cancel.
 
-5. **Catalog overview is truncated**
-   - `docs app/docs catalog/01_OVERVIEW.md` ends mid-thought at `- печати этикеток товаров`.
-   - The section about Manufacturer usage is incomplete.
+5. **Обрезанный обзор Catalog**
+   - `docs app/docs catalog/01_OVERVIEW.md` обрывается на середине мысли: `- печати этикеток товаров`.
+   - Раздел про использование Manufacturer неполный.
 
-6. **API completeness gap (manufacturers)**
-   - `docs app/docs catalog/04_API.md` documents only `GET /catalog/manufacturers` and `POST /catalog/manufacturers`.
-   - Missing `GET by id`, `PATCH`, `DELETE` compared to all other catalog entities.
+6. **Пробел в полноте API (manufacturers)**
+   - В `docs app/docs catalog/04_API.md` для manufacturers описаны только `GET /catalog/manufacturers` и `POST /catalog/manufacturers`.
+   - Отсутствуют `GET by id`, `PATCH`, `DELETE` в отличие от остальных сущностей catalog.
 
-7. **Terminology mismatch for hierarchy**
-   - Core docs describe Organization as branch-level isolation object.
-   - Catalog docs state catalog works at organization level *not branch level*.
-   - Label printing introduces `venue_id` in addition to `organization_id` without a canonical hierarchy definition in core docs.
+7. **Несоответствие терминологии и иерархии**
+   - Базовые документы описывают Organization как объект изоляции на уровне филиала.
+   - Документы catalog говорят, что catalog работает на уровне organization, *а не филиала*.
+   - В label printing вводится `venue_id` вместе с `organization_id`, но в core-документации нет каноничного определения этой иерархии.
 
-8. **Command typo in developer workflow**
-   - In `docs/10_DEVELOPMENT_WORKFLOW.md`, Alembic command uses an em dash (`—autogenerate`) instead of `--autogenerate`.
+8. **Опечатка в команде в процессе разработки**
+   - В `docs/10_DEVELOPMENT_WORKFLOW.md` команда Alembic использует длинное тире (`—autogenerate`) вместо `--autogenerate`.
 
-9. **Weak project entry point documentation**
-   - `README.md` is a placeholder and does not link to architecture docs, setup, or module map.
+9. **Слабая входная документация проекта**
+   - `README.md` выглядит как заглушка и не ссылается на архитектурные документы, настройку или карту модулей.
 
-## Medium-priority quality issues
+## Проблемы качества среднего приоритета
 
-1. **Inconsistent language style**
-   - Mix of Russian/English naming and description style across docs.
+1. **Непоследовательный языковой стиль**
+   - По документации смешаны русские и английские наименования/стили описания.
 
-2. **Formatting inconsistencies**
-   - Several table separators use non-standard symbols (e.g. `|——|——|`, `|-—|-—|`) and may render inconsistently.
+2. **Несогласованности форматирования**
+   - В ряде таблиц используются нестандартные разделители (например, `|——|——|`, `|-—|-—|`), что может приводить к некорректному рендерингу.
 
-3. **Non-standard docs path with spaces**
-   - `docs app/docs ...` increases friction for tooling, scripts, and contributors.
+3. **Нестандартный путь к документации с пробелами**
+   - `docs app/docs ...` усложняет работу инструментов, скриптов и контрибьюторов.
 
-## Recommended remediation plan
+## Рекомендуемый план исправлений
 
-### Phase 1 (must-fix)
+### Фаза 1 (обязательно исправить)
 
-1. Redefine `docs/01_ARCHITECTURE.md` as true top-level architecture overview:
-   - context diagram
-   - module boundaries
-   - data ownership
-   - integration points
-2. Keep `docs/02_TENANT_ISOLATION.md` focused on tenant model only and remove corruption.
-3. Fix payroll query example to match schema:
-   - either join `employments` by `employment_id`
-   - or add explicit `user_id` to `payroll_records` and document why.
-4. Align print-job lifecycle across all label-printing docs:
-   - either add `cancelled` everywhere + API endpoint
-   - or remove cancelled state from queue docs.
-5. Complete catalog manufacturer API section and finish truncated overview text.
+1. Переопределить `docs/01_ARCHITECTURE.md` как полноценный верхнеуровневый обзор архитектуры:
+   - контекстная диаграмма
+   - границы модулей
+   - владение данными
+   - точки интеграции
+2. Оставить `docs/02_TENANT_ISOLATION.md` только про tenant model и удалить поврежденный текст.
+3. Привести пример запроса payroll в соответствие со схемой:
+   - либо делать join с `employments` по `employment_id`
+   - либо явно добавить `user_id` в `payroll_records` и задокументировать причину.
+4. Синхронизировать lifecycle print job во всех документах label printing:
+   - либо добавить `cancelled` везде + endpoint в API
+   - либо убрать `cancelled` из queue-документации.
+5. Дополнить API-раздел manufacturers и завершить обрезанный текст в catalog overview.
 
-### Phase 2 (consistency)
+### Фаза 2 (консистентность)
 
-1. Add `Glossary` doc with canonical terms:
+1. Добавить документ `Glossary` с каноничными терминами:
    - organization
    - branch/venue
    - global scope vs organization scope
-2. Standardize naming convention:
-   - one term in schema + API + architecture docs (`venue_id` vs `branch_id`)
-3. Normalize Markdown tables and punctuation.
-4. Rename docs directory to a tooling-friendly path (e.g. `docs/app/...`).
+2. Стандартизировать конвенцию именования:
+   - единый термин в schema + API + архитектурных документах (`venue_id` vs `branch_id`).
+3. Нормализовать Markdown-таблицы и пунктуацию.
+4. Переименовать директорию документации в более удобный для инструментов путь (например, `docs/app/...`).
 
-### Phase 3 (developer experience)
+### Фаза 3 (developer experience)
 
-1. Expand `README.md`:
-   - project purpose
-   - quick start
-   - documentation map
-   - module matrix
-2. Add documentation quality checks in CI:
+1. Расширить `README.md`:
+   - назначение проекта
+   - быстрый старт
+   - карта документации
+   - матрица модулей
+2. Добавить проверки качества документации в CI:
    - markdownlint
    - link check
    - spell check (ru/en)
-3. Add a docs change checklist to PR template.
+3. Добавить чеклист по документации в шаблон PR.
 
-## Suggested Definition of Done for docs quality
+## Предлагаемый Definition of Done для качества документации
 
-A docs update is complete when:
-- terminology is consistent across architecture, schema, and API docs;
-- every entity has complete CRUD/API description (or explicit rationale for deviations);
-- examples are executable/correct (`--autogenerate`, valid SQL);
-- no truncated sections or corrupted text remain;
-- README points to all key docs.
+Обновление документации считается завершенным, когда:
+- терминология согласована между архитектурой, схемой БД и API;
+- для каждой сущности есть полное описание CRUD/API (или явно задокументировано, почему есть исключения);
+- примеры команд и запросов корректны и выполнимы (`--autogenerate`, валидный SQL);
+- отсутствуют обрезанные разделы и поврежденный текст;
+- README ссылается на все ключевые документы.
